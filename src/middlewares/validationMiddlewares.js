@@ -3,9 +3,9 @@ const Joi = require("joi");
 const contactValidation = (req, res, next) => {
   console.log(req.url);
   const schema = Joi.object({
-    name: Joi.string().trim().required(),
-    email: Joi.string().trim().email().required(),
-    phone: Joi.string().trim().required(),
+    name: Joi.string().min(3).max(30).trim().required(),
+    email: Joi.string().min(3).max(30).trim().email().required(),
+    phone: Joi.string().min(6).max(30).trim().required(),
   });
 
   const result = schema.validate(req.body);
