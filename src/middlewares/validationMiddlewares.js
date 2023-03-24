@@ -4,19 +4,19 @@ const contactValidation = (req, res, next) => {
   console.log(req.url);
   const schema = Joi.object({
     name: Joi.string().trim().required(),
-    email: Joi.string()
-      .trim()
-      .email()
-      .required(),
+    email: Joi.string().trim().email().required(),
     phone: Joi.string().trim().required(),
   });
 
   const result = schema.validate(req.body);
 
   if (result.error) {
+    const errorMessage = result.error.details[0].message;
     const infoMessage =
       req.url === "/" ? "missing required name field" : "missing fields";
-    return res.status(400).json({ message: infoMessage });
+    return res
+      .status(400)
+      .json({ message: infoMessage, details: errorMessage });
   }
 
   next();
