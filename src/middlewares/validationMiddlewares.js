@@ -33,7 +33,6 @@ const updateContactValidation = (req, res, next) => {
   const result = schema.validate(req.body);
 
   if (result.error) {
-    // const errorFieldName = result.error.details[0].context.key;
     return res.status(400).json({ message: result.error.details[0].message });
   }
 
