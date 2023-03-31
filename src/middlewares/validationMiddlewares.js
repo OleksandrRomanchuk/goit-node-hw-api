@@ -40,11 +40,11 @@ const updateContactValidation = (req, _, next) => {
 const updateStatusValidation = (req, _, next) => {
   const schema = Joi.object({
     favorite: Joi.boolean().required(),
-  }).options({ allowUnknown: true });
+  });
 
   const result = schema.validate(req.body);
 
-  if (result.error) throw HTTPError(400, "Missing field favorite");
+  if (result.error) throw HTTPError(400, result.error.details[0].message);
 
   next();
 };
