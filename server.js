@@ -3,6 +3,10 @@ const { connectDB } = require("./src/db/connection");
 
 const port = process.env.PORT || 8081;
 
+process.on("exit", (code) => {
+  console.log(`Exit with code: ${code}`);
+});
+
 const serverStart = async () => {
   try {
     await connectDB();
@@ -11,6 +15,7 @@ const serverStart = async () => {
       console.log("Database connection successful.");
     });
   } catch (error) {
+    process.exitCode = 1;
     console.log(error.message);
   }
 };
