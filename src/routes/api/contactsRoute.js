@@ -4,6 +4,7 @@ const { asyncControlersWrapper } = require("../../helpers");
 const {
   addContactValidation,
   updateContactValidation,
+  updateStatusValidation,
 } = require("../../middlewares/validationMiddlewares.js");
 const {
   getAll,
@@ -11,6 +12,7 @@ const {
   add,
   update,
   remove,
+  updateStatus,
 } = require("../../controllers/contactsController");
 
 contactsRouter
@@ -18,6 +20,11 @@ contactsRouter
   .get("/:contactId", asyncControlersWrapper(getById))
   .post("/", addContactValidation, asyncControlersWrapper(add))
   .put("/:contactId", updateContactValidation, asyncControlersWrapper(update))
-  .delete("/:contactId", asyncControlersWrapper(remove));
+  .delete("/:contactId", asyncControlersWrapper(remove))
+  .patch(
+    "/:contactId/favorite",
+    updateStatusValidation,
+    asyncControlersWrapper(updateStatus)
+  );
 
 module.exports = contactsRouter;
