@@ -1,4 +1,4 @@
 const HTTPError = require("./HTTPError");
-const asyncControlersWrapper = require("./asyncControllersWrapper");
+const asyncControlersWrapper = require("./apiHelpers");
 
 module.exports = { HTTPError, asyncControlersWrapper };
