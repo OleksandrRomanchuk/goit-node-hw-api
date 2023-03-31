@@ -4,7 +4,7 @@ const {
   addContact,
   updateContact,
   deleteContact,
-} = require("../models/contacts");
+} = require("../db/contactsModel/contacts");
 const { HTTPError } = require("../helpers");
 
 const getAll = async (_, res) => {
