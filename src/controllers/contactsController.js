@@ -6,6 +6,7 @@ const {
   deleteContact,
 } = require("../db/contactsModel/contacts");
 const { HTTPError } = require("../helpers");
+const mongoose = require("mongoose");
 
 const getAll = async (_, res) => {
   const contacts = await getAllContacts();
@@ -15,6 +16,9 @@ const getAll = async (_, res) => {
 
 const getById = async ({ params }, res, _) => {
   const id = params.contactId;
+
+  if (!mongoose.isValidObjectId(id)) throw HTTPError(404, "Not found");
+
   const contact = await getContactById(id);
 
   if (!contact) throw HTTPError(404, "Not found");
@@ -34,6 +38,8 @@ const update = async (req, res, _) => {
   const id = req.params.contactId;
   const body = req.body;
 
+  if (!mongoose.isValidObjectId(id)) throw HTTPError(404, "Not found");
+
   const updatedContact = await updateContact(id, body);
 
   if (!updatedContact) throw HTTPError(404, "Not found");
@@ -43,6 +49,8 @@ const update = async (req, res, _) => {
 
 const remove = async (req, res, _) => {
   const id = req.params.contactId;
+
+  if (!mongoose.isValidObjectId(id)) throw HTTPError(404, "Not found");
 
   const result = await deleteContact(id);
 
@@ -54,6 +62,8 @@ const remove = async (req, res, _) => {
 const updateStatus = async (req, res) => {
   const id = req.params.contactId;
   const body = req.body;
+
+  if (!mongoose.isValidObjectId(id)) throw HTTPError(404, "Not found");
 
   const updatedContact = await updateContact(id, body);
 
