@@ -44,7 +44,7 @@ const updateStatusValidation = (req, _, next) => {
 
   const result = schema.validate(req.body);
 
-  if (result.error) throw HTTPError(400, result.error.details[0].message);
+  if (result.error) throw HTTPError(400, { message: "missing field favorite" });
 
   next();
 };
