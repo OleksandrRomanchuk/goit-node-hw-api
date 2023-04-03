@@ -61,11 +61,11 @@ const remove = async (req, res, _) => {
 
 const updateStatus = async (req, res) => {
   const id = req.params.contactId;
-  const body = req.body;
+  const { favorite } = req.body;
 
   if (!mongoose.isValidObjectId(id)) throw HTTPError(404, "Not found");
 
-  const updatedContact = await updateContact(id, body);
+  const updatedContact = await updateContact(id, { favorite });
 
   if (!updatedContact) throw HTTPError(404, "Not found");
 
