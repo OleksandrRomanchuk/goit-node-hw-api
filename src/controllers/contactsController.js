@@ -1,79 +1,75 @@
 const {
-  listContacts,
+  getAllContacts,
   getContactById,
   addContact,
   updateContact,
-  removeContact,
-} = require("../models/contacts.js");
+  deleteContact,
+} = require("../db/contactsModel/contacts");
 const { HTTPError } = require("../helpers");
+const mongoose = require("mongoose");
 
-const getAll = async (_, res, next) => {
-  try {
-    const contacts = await listContacts();
+const getAll = async (_, res) => {
+  const contacts = await getAllContacts();
 
-    res.status(200).json(contacts);
-  } catch (error) {
-    next(error);
-  }
+  res.status(200).json(contacts);
 };
 
-const getById = async ({ params }, res, next) => {
-  try {
-    const id = params.contactId;
-    const contact = await getContactById(id);
+const getById = async ({ params }, res, _) => {
+  const id = params.contactId;
 
-    if (!contact) {
-      return res.status(404).json({ message: "Not found" });
-    }
+  if (!mongoose.isValidObjectId(id)) throw HTTPError(404, "Not found");
 
-    res.status(200).json(contact);
-  } catch (error) {
-    next(error);
-  }
+  const contact = await getContactById(id);
+
+  if (!contact) throw HTTPError(404, "Not found");
+
+  res.status(200).json(contact);
 };
 
-const add = async (req, res, next) => {
-  try {
-    const body = req.body;
+const add = async (req, res, _) => {
+  const body = req.body;
 
-    const contact = await addContact(body);
+  const contact = await addContact(body);
 
-    if (!contact)
-      throw HTTPError(400, "A contact with such name already exists.");
-
-    res.status(201).json(contact);
-  } catch (error) {
-    next(error);
-  }
+  res.status(201).json(contact);
 };
 
-const update = async (req, res, next) => {
-  try {
-    const id = req.params.contactId;
-    const body = req.body;
+const update = async (req, res, _) => {
+  const id = req.params.contactId;
+  const body = req.body;
 
-    const updatedContact = await updateContact(id, body);
+  if (!mongoose.isValidObjectId(id)) throw HTTPError(404, "Not found");
 
-    if (!updatedContact) throw HTTPError(404, "Not found");
+  const updatedContact = await updateContact(id, body);
 
-    res.status(200).json(updatedContact);
-  } catch (error) {
-    next(error);
-  }
+  if (!updatedContact) throw HTTPError(404, "Not found");
+
+  res.status(200).json(updatedContact);
 };
 
-const remove = async (req, res, next) => {
-  try {
-    const id = req.params.contactId;
+const remove = async (req, res, _) => {
+  const id = req.params.contactId;
 
-    const result = await removeContact(id);
+  if (!mongoose.isValidObjectId(id)) throw HTTPError(404, "Not found");
 
-    if (!result) throw HTTPError(404, "Not found");
+  const result = await deleteContact(id);
 
-    res.status(200).json(result);
-  } catch (error) {
-    next(error);
-  }
+  if (!result) throw HTTPError(404, "Not found");
+
+  res.status(200).json({ message: "Contact deleted." });
+};
+
+const updateStatus = async (req, res) => {
+  const id = req.params.contactId;
+  const { favorite } = req.body;
+
+  if (!mongoose.isValidObjectId(id)) throw HTTPError(404, "Not found");
+
+  const updatedContact = await updateContact(id, { favorite });
+
+  if (!updatedContact) throw HTTPError(404, "Not found");
+
+  res.status(200).json(updatedContact);
 };
 
 module.exports = {
@@ -82,4 +78,5 @@ module.exports = {
   add,
   update,
   remove,
+  updateStatus,
 };
