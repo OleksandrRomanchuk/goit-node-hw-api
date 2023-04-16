@@ -4,17 +4,16 @@ const { HTTPError } = require("../helpers");
 const { SECRET_KEY } = process.env;
 
 const authorizationCheck = async (req, _, next) => {
-  const { authorization = "" } = req.headers;
-
-  if (!authorization) throw HTTPError(401, "Not authorized");
-
-  const [bearer, token] = authorization.split(" ");
-
-  if (bearer !== "Bearer") throw HTTPError(401, "Not authorized");
-
   try {
+    const { authorization = "" } = req.headers;
+
+    if (!authorization) throw HTTPError(401, "Not authorized");
+
+    const [bearer, token] = authorization.split(" ");
+
+    if (bearer !== "Bearer") throw HTTPError(401, "Not authorized");
+
     const { userId } = jwt.verify(token, SECRET_KEY);
-    console.log("userId: ", userId);
 
     if (!userId) throw HTTPError(401, "Not authorized");
 
