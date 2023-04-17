@@ -20,6 +20,7 @@ const user = new Schema(
       type: String,
       default: "",
     },
+    avatarURL: String,
   },
   { versionKey: false }
 );
