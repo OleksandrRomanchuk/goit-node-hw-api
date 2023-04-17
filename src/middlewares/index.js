@@ -9,6 +9,7 @@ const {
   authValidation,
   subscriptionValidation,
 } = require("./usersRoutsValidation");
+const upload = require("./upload");
 
 module.exports = {
   isValidId,
@@ -18,4 +19,5 @@ module.exports = {
   updateStatusValidation,
   authValidation,
   subscriptionValidation,
+  upload,
 };
