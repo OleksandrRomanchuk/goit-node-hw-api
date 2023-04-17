@@ -5,12 +5,14 @@ require("dotenv").config();
 
 const app = express();
 const formatsLogger = app.get("env") === "development" ? "dev" : "short";
-const contactsRouter = require("./src/routes/api/contactsRoute");
+const usersRouter = require("./routes/api/authRoutes");
+const contactsRouter = require("./routes/api/contactsRoutes");
 
 app.use(logger(formatsLogger));
 app.use(cors());
 app.use(express.json());
 
+app.use("/users", usersRouter);
 app.use("/api/contacts", contactsRouter);
 
 app.use((req, res) => {
