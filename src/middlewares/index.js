@@ -8,6 +8,7 @@ const {
 const {
   authValidation,
   subscriptionValidation,
+  emailValidation,
 } = require("./usersRoutsValidation");
 const upload = require("./upload");
 
@@ -19,5 +20,6 @@ module.exports = {
   updateStatusValidation,
   authValidation,
   subscriptionValidation,
+  emailValidation,
   upload,
 };
