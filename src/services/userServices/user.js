@@ -1,6 +1,6 @@
 const User = require("./userSchemas");
 
-const checkingDoesEmailInUse = (email) => User.findOne({ email });
+const checkUserByAnyField = (field) => User.findOne(field);
 
 const registerUser = (credentials) => User.create(credentials);
 
@@ -18,11 +18,16 @@ const changeSubscription = (_id, { subscription }) =>
 const setNewAvatar = (_id, avatarURL) =>
   User.findByIdAndUpdate(_id, { avatarURL });
 
+const verifyUserEmail = (field, fieldsToUpdate) =>
+  User.findOneAndUpdate({ ...field }, fieldsToUpdate, {
+    returnDocument: "after",
+  });
 module.exports = {
-  checkingDoesEmailInUse,
+  checkUserByAnyField,
   registerUser,
   logInUser,
   setToken,
   changeSubscription,
   setNewAvatar,
+  verifyUserEmail,
 };
