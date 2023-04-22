@@ -2,6 +2,7 @@ const { Router } = require("express");
 const {
   authValidation,
   subscriptionValidation,
+  emailValidation,
   upload,
 } = require("../../middlewares");
 const {
@@ -11,6 +12,8 @@ const {
   getCurrentUser,
   updateSubscription,
   updateAvatar,
+  verifyEmail,
+  resendingVerifyLetter,
 } = require("../../controllers/authControllers");
 const { authorizationCheck } = require("../../middlewares");
 
@@ -22,6 +25,8 @@ usersRouter
   .post("/logout", authorizationCheck, logOut)
   .get("/current", authorizationCheck, getCurrentUser)
   .patch("/", authorizationCheck, subscriptionValidation, updateSubscription)
-  .patch("/avatars", authorizationCheck, upload.single("avatar"), updateAvatar);
+  .patch("/avatars", authorizationCheck, upload.single("avatar"), updateAvatar)
+  .get("/verify/:verificationToken", verifyEmail)
+  .post("/verify", emailValidation, resendingVerifyLetter);
 
 module.exports = usersRouter;
