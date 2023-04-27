@@ -34,4 +34,18 @@ const subscriptionValidation = (req, _, next) => {
   next();
 };
 
-module.exports = { authValidation, subscriptionValidation };
+const emailValidation = (req, _, next) => {
+  const schema = Joi.object({
+    email: Joi.string().email().required(),
+  }).options({ allowUnknown: true });
+
+  const result = schema.validate(req.body);
+
+  if (result.error) {
+    throw HTTPError(400, "Missing required field email");
+  }
+
+  next();
+};
+
+module.exports = { authValidation, subscriptionValidation, emailValidation };

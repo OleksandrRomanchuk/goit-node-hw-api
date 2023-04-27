@@ -1,24 +1,30 @@
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const gravatar = require("gravatar");
+const { v4: uuidv4 } = require("uuid");
 const jimp = require("jimp");
 const path = require("path");
 const fs = require("fs/promises");
 const {
-  checkingDoesEmailInUse,
+  checkUserByAnyField,
   registerUser,
   logInUser,
   setToken,
   changeSubscription,
   setNewAvatar,
+  verifyUserEmail,
 } = require("../services/userServices/user");
-const { HTTPError, asyncControlersWrapper } = require("../helpers");
+const {
+  HTTPError,
+  asyncControlersWrapper,
+  emailVerificationSender,
+} = require("../helpers");
 const { SECRET_KEY } = process.env;
 
 const signUp = async (req, res) => {
   const { email, password } = req.body;
 
-  const user = await checkingDoesEmailInUse(email);
+  const user = await checkUserByAnyField({ email });
 
   if (user) throw HTTPError(409, "Email in use");
 
@@ -26,11 +32,16 @@ const signUp = async (req, res) => {
 
   const avatarURL = gravatar.url(email);
 
+  const verificationToken = uuidv4();
+
   const result = await registerUser({
     email,
     password: hashedPassword,
     avatarURL,
+    verificationToken,
   });
+
+  await emailVerificationSender({ email, verificationToken });
 
   return res.status(201).json({
     user: {
@@ -44,7 +55,12 @@ const signUp = async (req, res) => {
 const signIn = async (req, res) => {
   const { email, password } = req.body;
 
-  const result = await logInUser({ email });
+  const result = await logInUser(email);
+
+  if (!result) throw HTTPError(404, "User not found");
+
+  if (!result.verify)
+    throw HTTPError(403, "To login, please verify your email.");
 
   if (!result) throw HTTPError(401, "Email or password is wrong");
 
@@ -115,6 +131,39 @@ const updateAvatar = async (req, res) => {
   res.status(200).json({ avatarURL });
 };
 
+const verifyEmail = async (req, res) => {
+  const { verificationToken } = req.params;
+
+  const user = await checkUserByAnyField({ verificationToken });
+
+  if (!user) throw HTTPError(404, "User not found");
+
+  const fieldsToUpdate = {
+    verificationToken: null,
+    verify: true,
+  };
+
+  await verifyUserEmail({ verificationToken }, fieldsToUpdate);
+
+  res.status(200).json({ message: "Verification successful" });
+};
+
+const resendingVerifyLetter = async (req, res) => {
+  const { email } = req.body;
+
+  const user = await checkUserByAnyField({ email });
+
+  if (!user) throw HTTPError(404, "User not found");
+
+  if (user.verify) throw HTTPError(400, "Verification has already been passed");
+
+  const { verificationToken } = user;
+
+  await emailVerificationSender({ email, verificationToken });
+
+  res.status(200).json({ message: "Verification email sent" });
+};
+
 module.exports = {
   signUp: asyncControlersWrapper(signUp),
   signIn: asyncControlersWrapper(signIn),
@@ -122,4 +171,6 @@ module.exports = {
   getCurrentUser: asyncControlersWrapper(getCurrentUser),
   updateSubscription: asyncControlersWrapper(updateSubscription),
   updateAvatar: asyncControlersWrapper(updateAvatar),
+  verifyEmail: asyncControlersWrapper(verifyEmail),
+  resendingVerifyLetter: asyncControlersWrapper(resendingVerifyLetter),
 };
