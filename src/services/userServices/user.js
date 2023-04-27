@@ -4,7 +4,7 @@ const checkUserByAnyField = (field) => User.findOne(field);
 
 const registerUser = (credentials) => User.create(credentials);
 
-const logInUser = (credentials) => User.findOne(credentials);
+const logInUser = (credentials) => User.findOne({ email: credentials });
 
 const setToken = (_id, { token }) => User.findByIdAndUpdate(_id, { token });
 
