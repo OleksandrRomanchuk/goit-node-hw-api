@@ -7,8 +7,8 @@ const emailVerificationSender = async (data) => {
   try {
     const sendConfig = {
       to: data.email,
-      from: "novator0511@gmail.com",
-      subject: "Email verification",
+      from: "oleksaandr.romanchuk@meta.ua",
+      subject: "Verify your email",
       html: `<p>Please click on the <a target="_blank" href="${BASE_URL}/users/verify/${data.verificationToken}">LINK</a> to verify your email.</p>`,
     };
 
